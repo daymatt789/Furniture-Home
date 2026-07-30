@@ -1,0 +1,49 @@
+{%- unless emptyState -%}
+  <div class="grid-product__quick-add">
+    {%- form 'product', product, class: 'grid-product__quick-add-form', id: nil, data-has-submit-listener: 'true' -%}
+      <input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+
+      {%- if product.has_only_default_variant -%}
+        <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+      {%- endif -%}
+
+      <button
+        type="submit"
+        name="add"
+        class="grid-product__quick-add-btn btn btn--primary btn--small{% if sold_out %} disabled{% endif %}"
+        {% if sold_out %}disabled="disabled"{% endif %}
+        {% unless product.has_only_default_variant %}hidden{% endunless %}
+      >
+        <span class="btn__text">
+          {%- if sold_out -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- else -%}
+            {{ 'products.product.add_to_cart' | t }}
+          {%- endif -%}
+        </span>
+      </button>
+
+      {%- unless product.has_only_default_variant -%}
+        <select
+          class="grid-product__quick-add-select btn btn--primary btn--small"
+          name="id"
+          {% if sold_out %}disabled="disabled"{% endif %}
+        >
+          <option value="" disabled selected hidden>
+            {%- if sold_out -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- else -%}
+              {{ 'products.product.add_to_cart' | t }}
+            {%- endif -%}
+          </option>
+
+          {%- for variant in product.variants -%}
+            {%- if variant.available -%}
+              <option value="{{ variant.id }}">{{ variant.title | escape }}</option>
+            {%- endif -%}
+          {%- endfor -%}
+        </select>
+      {%- endunless -%}
+    {%- endform -%}
+  </div>
+{%- endunless -%}
